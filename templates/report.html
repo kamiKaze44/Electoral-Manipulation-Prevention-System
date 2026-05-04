@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Submit Report{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="page-hero-content">
+        <div class="page-breadcrumb">ElecGuard → Submit Report</div>
+        <h1 class="page-title">Submit a Report</h1>
+        <p class="page-sub">Report suspected electoral manipulation. Your report will be analyzed by AI and forwarded to the relevant authorities. You may remain anonymous.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="form-layout">
+
+        <!-- Info sidebar -->
+        <aside class="form-sidebar">
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">What to report</h3>
+                <ul class="sidebar-list">
+                    <li>Vote buying or material incentives offered for votes</li>
+                    <li>Organized voter transportation with payment</li>
+                    <li>Pressure from employers or local officials on how to vote</li>
+                    <li>Coordinated disinformation or fake news campaigns</li>
+                    <li>Use of public resources for campaign activities</li>
+                    <li>Suspicious campaign finance or undeclared funding</li>
+                    <li>Illegal changes to electoral lists</li>
+                    <li>Foreign interference or funding</li>
+                </ul>
+            </div>
+
+            <div class="sidebar-card sidebar-card-anon">
+                <div class="anon-icon">🔒</div>
+                <h3 class="sidebar-card-title">Your privacy</h3>
+                <p>You may leave your name blank to submit anonymously. Reports are stored securely and are only accessible through this system. Your IP address is not logged.</p>
+            </div>
+
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">After submission</h3>
+                <div class="after-steps">
+                    <div class="after-step">
+                        <span class="after-num">1</span>
+                        <span>Report stored in secure database</span>
+                    </div>
+                    <div class="after-step">
+                        <span class="after-num">2</span>
+                        <span>Notification sent to monitoring authority</span>
+                    </div>
+                    <div class="after-step">
+                        <span class="after-num">3</span>
+                        <span>AI analysis available on request</span>
+                    </div>
+                    <div class="after-step">
+                        <span class="after-num">4</span>
+                        <span>Status tracked until resolution</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Form -->
+        <div class="form-main">
+            <form method="POST" action="{{ url_for('report') }}" class="report-form">
+
+                <div class="form-group">
+                    <label class="form-label" for="manipulation_type">
+                        Type of Manipulation <span class="required">*</span>
+                    </label>
+                    <select name="manipulation_type" id="manipulation_type" class="form-select" required>
+                        <option value="" disabled selected>Select the type of manipulation...</option>
+                        <option value="Informational">📡 Informational — Disinformation, fake news, media bias</option>
+                        <option value="Administrative">🏛 Administrative — Abuse of public resources, official pressure</option>
+                        <option value="Financial">💰 Financial — Vote buying, undeclared funding, bribery</option>
+                        <option value="Mobilization">🚌 Mobilization — Organized voter transport, turnout manipulation</option>
+                        <option value="Legal-Institutional">⚖️ Legal-Institutional — Illegal rule changes, biased commission decisions</option>
+                        <option value="Other">🔍 Other / Unknown</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="location">Location</label>
+                        <input type="text" name="location" id="location" class="form-input"
+                               placeholder="e.g. Chișinău, Orhei, or region name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="incident_date">Date of Incident</label>
+                        <input type="date" name="incident_date" id="incident_date" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">
+                        Description <span class="required">*</span>
+                    </label>
+                    <textarea name="description" id="description" class="form-textarea" rows="7"
+                              placeholder="Describe what you witnessed in as much detail as possible. Include: who was involved, what happened, how many people were affected, any evidence you have (photos, recordings, documents)..."
+                              required></textarea>
+                    <div class="form-hint">Be as specific as possible. More detail = more effective AI analysis and authority response.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reporter_name">Your Name <span class="optional">(optional — leave blank to remain anonymous)</span></label>
+                    <input type="text" name="reporter_name" id="reporter_name" class="form-input"
+                           placeholder="Anonymous">
+                </div>
+
+                <div class="form-disclaimer">
+                    <span class="disclaimer-icon">ℹ</span>
+                    By submitting this report, you confirm that the information provided is accurate to the best of your knowledge. Submitting deliberately false reports may constitute a violation of Moldovan law.
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ url_for('home') }}" class="btn btn-ghost">Cancel</a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        Submit Report →
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
