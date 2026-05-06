@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports | ElecGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/index.html" class="nav-brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7V12C3 16.97 6.96 21.57 12 23C17.04 21.57 21 16.97 21 12V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="brand-name">Elec<span class="brand-accent">Guard</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html" class="nav-link">Dashboard</a></li>
+            <li><a href="/news.html" class="nav-link">News</a></li>
+            <li><a href="/polling.html" class="nav-link">Where to Vote</a></li>
+            <li><a href="/legislation.html" class="nav-link">Legislation</a></li>
+            <li><a href="/reports.html" class="nav-link active">Reports</a></li>
+            <li><a href="/report.html" class="nav-cta">+ Submit Report</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <div class="page-breadcrumb">ElecGuard Reports</div>
+                <h1 class="page-title">Reports Database</h1>
+                <p class="page-sub">All submitted reports of electoral manipulation available in prototype mode.</p>
+            </div>
+            <div class="page-hero-action">
+                <a href="/report.html" class="btn btn-primary">Submit New Report</a>
+            </div>
+        </section>
+
+        <section class="section">
+            
+            <!-- THE INTEGRATED MAP -->
+            <div id="map" style="height: 400px; width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 2rem; z-index: 1;"></div>
+
+            <div class="filter-bar">
+                <span class="filter-label">Filter by type</span>
+                <div class="filter-chips" id="filter-chips-container">
+                    <a href="/reports.html" class="filter-chip active" id="chip-all">All</a>
+                </div>
+                <span class="filter-count" id="report-count">Loading...</span>
+            </div>
+
+            <div class="reports-table-wrap" id="table-wrapper">
+                <table class="reports-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- JS Injection -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="empty-state-container"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
+            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+        </div>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeFilter = urlParams.get('filter');
+
+        // Initialize Map
+        var map = L.map('map').setView([47.0105, 28.8638], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        fetch('/api/reports')
+            .then(res => res.json())
+            .then(data => {
+                
+                // 1. Generate unique filter chips based on data
+                const uniqueTypes = [...new Set(data.map(item => item.type))];
+                const chipsContainer = document.getElementById('filter-chips-container');
+                
+                if (activeFilter) { document.getElementById('chip-all').classList.remove('active'); }
+                
+                uniqueTypes.forEach(type => {
+                    const isActive = (activeFilter === type) ? 'active' : '';
+                    chipsContainer.innerHTML += `<a href="/reports.html?filter=${encodeURIComponent(type)}" class="filter-chip ${isActive}">${type}</a>`;
+                });
+
+                // 2. Filter data
+                let filteredData = data;
+                if (activeFilter) {
+                    filteredData = data.filter(r => r.type === activeFilter);
+                }
+
+                // 3. Render Map Markers
+                filteredData.forEach(r => {
+                    if(r.lat && r.lng) {
+                        L.marker([r.lat, r.lng]).addTo(map)
+                         .bindPopup(`<b>${r.type}</b><br>${r.loc}<br><a href="/report_detail.html?id=${r.id}">View Report #${r.id}</a>`);
+                    }
+                });
+
+                // 4. Update count
+                document.getElementById('report-count').innerText = `${filteredData.length} report${filteredData.length !== 1 ? 's' : ''}`;
+
+                // 5. Render Table or Empty State
+                if (filteredData.length === 0) {
+                    document.getElementById('table-wrapper').style.display = 'none';
+                    document.getElementById('empty-state-container').innerHTML = `
+                        <div class="empty-state">
+                            <p>No reports found ${activeFilter ? 'for type <strong>' + activeFilter + '</strong>' : 'yet'}.</p>
+                            ${activeFilter ? '<a href="/reports.html" class="btn btn-ghost">Clear filter</a>' : '<a href="/report.html" class="btn btn-primary">Submit the first report</a>'}
+                        </div>
+                    `;
+                    return;
+                }
+
+                const tbody = document.getElementById('table-body');
+                let rowsHtml = '';
+                filteredData.forEach(r => {
+                    const statusClass = r.status.toLowerCase().replace(/ /g, '-');
+                    const typeClass = r.type.toLowerCase().replace(/ /g, '-').replace(/_/g, '-');
+
+                    rowsHtml += `
+                        <tr class="report-row" onclick="window.location='/report_detail.html?id=${r.id}'" style="cursor:pointer;">
+                            <td class="report-id">#${r.id}</td>
+                            <td><span class="badge badge-type badge-${typeClass}">${r.type}</span></td>
+                            <td class="report-desc-cell">${r.desc.length > 100 ? r.desc.substring(0, 100) + '...' : r.desc}</td>
+                            <td class="report-meta-cell">${r.loc || '—'}</td>
+                            <td><span class="badge badge-status badge-${statusClass}">${r.status}</span></td>
+                            <td class="report-meta-cell">${r.date || '—'}</td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = rowsHtml;
+            });
+    </script>
+</body>
+</html>

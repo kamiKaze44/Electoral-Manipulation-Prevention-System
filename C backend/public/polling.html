@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Polling Station | ElecGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .polling-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 2rem; }
+        .search-card { background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: fit-content; }
+        .result-card { margin-top: 1.5rem; padding: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: none; }
+        .result-card.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .station-id { font-family: 'IBM Plex Mono', monospace; color: #2563eb; font-weight: 600; font-size: 1.1rem; }
+        .station-name { font-size: 1.25rem; font-weight: 600; margin: 0.5rem 0; color: #0f172a; }
+        .station-address { color: #475569; margin-bottom: 1rem; }
+        .station-hours { display: inline-block; background: #dcfce7; color: #166534; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) { .polling-layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/index.html" class="nav-brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7V12C3 16.97 6.96 21.57 12 23C17.04 21.57 21 16.97 21 12V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="brand-name">Elec<span class="brand-accent">Guard</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html" class="nav-link">Dashboard</a></li>
+            <li><a href="/news.html" class="nav-link">News</a></li>
+            <li><a href="/polling.html" class="nav-link active">Where to Vote</a></li>
+            <li><a href="/legislation.html" class="nav-link">Legislation</a></li>
+            <li><a href="/reports.html" class="nav-link">Reports</a></li>
+            <li><a href="/report.html" class="nav-cta">+ Submit Report</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <div class="page-breadcrumb">ElecGuard → Citizen Tools</div>
+                <h1 class="page-title">Find Your Polling Station</h1>
+                <p class="page-sub">Enter your residential address or IDNP to find exactly where you are registered to vote on election day.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="polling-layout">
+                <!-- Search Panel -->
+                <div class="search-card">
+                    <h3 style="margin-top:0; font-size: 1.25rem;">Address Search</h3>
+                    <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">For this prototype, try typing "Rascani" or "Centru".</p>
+                    
+                    <form id="polling-form">
+                        <div class="form-group">
+                            <label class="form-label" for="home_address">Home Address</label>
+                            <input type="text" id="home_address" class="form-input" placeholder="e.g., str. Studenților 9/7" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Find My Station</button>
+                    </form>
+
+                    <!-- Results Panel -->
+                    <div id="result-panel" class="result-card">
+                        <div class="station-id" id="res-id">Sector 1 / Station #042</div>
+                        <h4 class="station-name" id="res-name">UTM - Blocul FCIM</h4>
+                        <div class="station-address" id="res-address">str. Studenților 9/7, Chișinău</div>
+                        <div class="station-hours">🕒 Open 07:00 - 21:00</div>
+                        
+                        <div style="margin-top: 1rem; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">
+                            <strong>Note:</strong> Bring your physical ID card (Buletin de identitate) with the accompanying loose leaf (fișa de însoțire).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Panel -->
+                <div>
+                    <div id="polling-map" style="height: 500px; width: 100%; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
+            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Map centered on Chisinau
+        var map = L.map('polling-map').setView([47.0268, 28.8322], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        
+        var currentMarker;
+
+        // Prototype Database of Polling Stations
+        const pollingStations = {
+            "default": {
+                id: "Sectorul Râșcani / Station #1/042",
+                name: "Technical University of Moldova (FCIM)",
+                address: "str. Studenților 9/7, Chișinău",
+                lat: 47.0583,
+                lng: 28.8685
+            },
+            "centru": {
+                id: "Sectorul Centru / Station #1/001",
+                name: "Liceul Teoretic 'Gheorghe Asachi'",
+                address: "str. București 64, Chișinău",
+                lat: 47.0185,
+                lng: 28.8300
+            },
+            "botanica": {
+                id: "Sectorul Botanica / Station #1/112",
+                name: "Centrul de Excelență în Informatică",
+                address: "str. Sarmizegetusa 48, Chișinău",
+                lat: 46.9850,
+                lng: 28.8650
+            }
+        };
+
+        document.getElementById('polling-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const input = document.getElementById('home_address').value.toLowerCase();
+            let station = pollingStations["default"]; // Fallback station
+
+            // Simple search logic for prototype
+            if (input.includes("centru") || input.includes("bucuresti")) {
+                station = pollingStations["centru"];
+            } else if (input.includes("botanica") || input.includes("sarmizegetusa")) {
+                station = pollingStations["botanica"];
+            }
+
+            // Update UI
+            document.getElementById('res-id').innerText = station.id;
+            document.getElementById('res-name').innerText = station.name;
+            document.getElementById('res-address').innerText = station.address;
+            
+            const resultPanel = document.getElementById('result-panel');
+            resultPanel.classList.remove('active');
+            void resultPanel.offsetWidth; // Trigger reflow to restart animation
+            resultPanel.classList.add('active');
+
+            // Update Map
+            if (currentMarker) map.removeLayer(currentMarker);
+            
+            map.flyTo([station.lat, station.lng], 16, { animate: true, duration: 1.5 });
+            
+            setTimeout(() => {
+                currentMarker = L.marker([station.lat, station.lng]).addTo(map)
+                    .bindPopup(`<b>${station.name}</b><br>Voting Location`)
+                    .openPopup();
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

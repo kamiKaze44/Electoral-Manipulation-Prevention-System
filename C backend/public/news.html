@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electoral News | ElecGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Specific styles for the news grid */
+        .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .news-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;}
+        .news-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1); }
+        .news-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #64748b; }
+        .news-title { font-size: 1.25rem; font-family: 'IBM Plex Serif', serif; font-weight: 600; margin: 0; line-height: 1.4; color: #0f172a; }
+        .news-desc { color: #475569; font-size: 0.95rem; line-height: 1.5; flex-grow: 1; margin: 0;}
+        .read-more { margin-top: 1rem; color: #2563eb; font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; font-size: 0.9rem;}
+        
+        /* Brand Colors for different sources */
+        .source-badge { padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;}
+        .source-zdg { background: #fee2e2; color: #b91c1c; }
+        .source-nm { background: #e0f2fe; color: #0369a1; }
+        .source-el { background: #ffedd5; color: #c2410c; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/index.html" class="nav-brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7V12C3 16.97 6.96 21.57 12 23C17.04 21.57 21 16.97 21 12V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="brand-name">Elec<span class="brand-accent">Guard</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html" class="nav-link">Dashboard</a></li>
+            <li><a href="/news.html" class="nav-link active">News</a></li>
+            <li><a href="/polling.html" class="nav-link">Where to Vote</a></li>
+            <li><a href="/legislation.html" class="nav-link">Legislation</a></li>
+            <li><a href="/reports.html" class="nav-link">Reports</a></li>
+            <li><a href="/report.html" class="nav-cta">+ Submit Report</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <div class="page-breadcrumb">ElecGuard → Trusted News</div>
+                <h1 class="page-title">Electoral News & Context</h1>
+                <p class="page-sub">Stay informed with verified reporting, investigations, and analyses from trusted independent journalistic platforms in Moldova.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="filter-bar">
+                <span class="filter-label">Filter by Source</span>
+                <div class="filter-chips" id="source-filters">
+                    <button class="filter-chip active" onclick="filterNews('All')">All Sources</button>
+                    <button class="filter-chip" onclick="filterNews('Ziarul de Gardă')">Ziarul de Gardă</button>
+                    <button class="filter-chip" onclick="filterNews('NewsMaker')">NewsMaker</button>
+                    <button class="filter-chip" onclick="filterNews('Europa Liberă')">Europa Liberă</button>
+                </div>
+                <span class="filter-count" id="news-count">Loading...</span>
+            </div>
+
+            <div class="news-grid" id="news-container">
+                <!-- News cards injected by JS -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
+            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+        </div>
+    </footer>
+
+    <script>
+        // Mock Database of News Articles (Easily replaceable with a real API fetch later)
+        const newsArticles = [
+            {
+                id: 1,
+                source: "Ziarul de Gardă",
+                sourceClass: "source-zdg",
+                title: "Investigație: Rețeaua ascunsă de finanțare a campaniilor electorale",
+                date: "May 5, 2026",
+                desc: "O nouă investigație arată cum fonduri nedeclarate sunt transferate prin metode complexe pentru a finanța publicitatea politică și a ocoli rapoartele oficiale ale CEC.",
+                link: "https://www.zdg.md"
+            },
+            {
+                id: 2,
+                source: "NewsMaker",
+                sourceClass: "source-nm",
+                title: "CEC a sancționat doi candidați pentru utilizarea resurselor administrative",
+                date: "May 4, 2026",
+                desc: "În ședința de astăzi, Comisia Electorală Centrală a decis sancționarea cu avertisment a doi candidați după ce s-a demonstrat că au folosit vehicule de stat în scopuri electorale.",
+                link: "https://newsmaker.md"
+            },
+            {
+                id: 3,
+                source: "Europa Liberă",
+                sourceClass: "source-el",
+                title: "Analiză: Cum sunt folosite rețelele sociale pentru a manipula votanții",
+                date: "May 2, 2026",
+                desc: "Campaniile de dezinformare țintesc tot mai mult moldovenii, folosind mesaje personalizate pe rețele sociale și aplicații de mesagerie criptată pentru a răspândi narative false.",
+                link: "https://moldova.europalibera.org"
+            },
+            {
+                id: 4,
+                source: "Ziarul de Gardă",
+                sourceClass: "source-zdg",
+                title: "Poliția a descins la multiple adrese într-un dosar de corupere a alegătorilor",
+                date: "May 1, 2026",
+                desc: "Zeci de percheziții au avut loc în această dimineață la persoanele suspectate că ar coordona o rețea de oferire a banilor în schimbul voturilor în regiunea de nord.",
+                link: "https://www.zdg.md"
+            },
+            {
+                id: 5,
+                source: "NewsMaker",
+                sourceClass: "source-nm",
+                title: "Misiunea Promo-LEX a publicat al doilea raport de monitorizare",
+                date: "April 29, 2026",
+                desc: "Observatorii independenți au constatat peste 50 de incidente de discurs care incită la ură și multiple cazuri nesoluționate privind afișajul electoral ilegal.",
+                link: "https://newsmaker.md"
+            },
+            {
+                id: 6,
+                source: "Europa Liberă",
+                sourceClass: "source-el",
+                title: "Interviu: Rolul observatorilor internaționali în validarea scrutinului",
+                date: "April 27, 2026",
+                desc: "Șeful misiunii OSCE explică procedurile prin care experții europeni evaluează dacă procesul electoral respectă sau nu standardele democratice internaționale.",
+                link: "https://moldova.europalibera.org"
+            }
+        ];
+
+        function renderNews(articles) {
+            const container = document.getElementById('news-container');
+            document.getElementById('news-count').innerText = `${articles.length} article${articles.length !== 1 ? 's' : ''}`;
+            
+            if (articles.length === 0) {
+                container.innerHTML = '<p>No news articles found for this source.</p>';
+                return;
+            }
+
+            let html = '';
+            articles.forEach(article => {
+                html += `
+                    <a href="${article.link}" target="_blank" class="news-card">
+                        <div class="news-meta">
+                            <span class="source-badge ${article.sourceClass}">${article.source}</span>
+                            <span>${article.date}</span>
+                        </div>
+                        <h3 class="news-title">${article.title}</h3>
+                        <p class="news-desc">${article.desc}</p>
+                        <div class="read-more">Read full article <span>→</span></div>
+                    </a>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function filterNews(sourceName) {
+            // Update active button styling
+            const buttons = document.querySelectorAll('#source-filters .filter-chip');
+            buttons.forEach(btn => {
+                if (btn.innerText === sourceName || (sourceName === 'All' && btn.innerText === 'All Sources')) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Filter data
+            if (sourceName === 'All') {
+                renderNews(newsArticles);
+            } else {
+                const filtered = newsArticles.filter(a => a.source === sourceName);
+                renderNews(filtered);
+            }
+        }
+
+        // Initialize on page load
+        renderNews(newsArticles);
+    </script>
+</body>
+</html>

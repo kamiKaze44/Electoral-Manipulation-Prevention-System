@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Detail | ElecGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/index.html" class="nav-brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7V12C3 16.97 6.96 21.57 12 23C17.04 21.57 21 16.97 21 12V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="brand-name">Elec<span class="brand-accent">Guard</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html" class="nav-link">Dashboard</a></li>
+            <li><a href="/news.html" class="nav-link">News</a></li>
+            <li><a href="/polling.html" class="nav-link">Where to Vote</a></li>
+            <li><a href="/legislation.html" class="nav-link">Legislation</a></li>
+            <li><a href="/reports.html" class="nav-link active">Reports</a></li>
+            <li><a href="/report.html" class="nav-cta">+ Submit Report</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <div class="page-breadcrumb">ElecGuard → <a href="/reports.html" class="breadcrumb-link">Reports</a> → <span id="bread-id">Loading...</span></div>
+                <h1 class="page-title" id="title-id">Loading Report...</h1>
+                <p class="page-sub" id="title-sub">...</p>
+            </div>
+            <div class="page-hero-action">
+                <span id="badge-status-top" class="badge badge-lg">...</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="detail-layout">
+                <!-- Main report content -->
+                <div class="detail-main">
+                    <div class="detail-card">
+                        <div class="detail-card-header">
+                            <h2 class="detail-card-title">Report Details</h2>
+                            <span id="badge-type" class="badge badge-type">...</span>
+                        </div>
+                        <div class="detail-fields">
+                            <div class="detail-field">
+                                <div class="detail-field-label">Description</div>
+                                <div class="detail-field-value detail-description" id="field-desc">...</div>
+                            </div>
+                            <div class="detail-fields-row">
+                                <div class="detail-field">
+                                    <div class="detail-field-label">Location</div>
+                                    <div class="detail-field-value" id="field-loc">...</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="detail-field-label">Incident Date</div>
+                                    <div class="detail-field-value" id="field-date">...</div>
+                                </div>
+                                <div class="detail-field">
+                                    <div class="detail-field-label">Reporter</div>
+                                    <div class="detail-field-value" id="field-rep">...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <aside class="detail-sidebar">
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-card-title">Actions</h3>
+                        <div class="action-list">
+                            <button onclick="alert('Prototype: Resolution simulated.');" class="btn btn-ghost btn-full">✓ Mark as Resolved</button>
+                            <a href="/reports.html" class="btn btn-ghost btn-full">← Back to Reports</a>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-card-title">Report Info</h3>
+                        <div class="meta-list">
+                            <div class="meta-item"><span class="meta-key">ID</span><span class="meta-val mono" id="meta-id">...</span></div>
+                            <div class="meta-item"><span class="meta-key">Type</span><span class="meta-val" id="meta-type">...</span></div>
+                            <div class="meta-item"><span class="meta-key">Status</span><span class="meta-val" id="meta-status">...</span></div>
+                            <div class="meta-item"><span class="meta-key">Date</span><span class="meta-val mono" id="meta-date">...</span></div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-card-title">Relevant Laws</h3>
+                        <div class="law-refs" id="law-refs-container">
+                            <!-- JS Will inject specific laws based on type -->
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
+            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+        </div>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const reportId = urlParams.get('id');
+
+        fetch('/api/reports/' + reportId)
+            .then(res => res.json())
+            .then(r => {
+                if(r.error) {
+                    document.getElementById('title-id').innerText = "Report Not Found";
+                    return;
+                }
+
+                // Header Info
+                document.getElementById('bread-id').innerText = "#" + r.id;
+                document.getElementById('title-id').innerText = "Report #" + r.id;
+                document.getElementById('title-sub').innerText = "Submitted by " + (r.reporter || 'Anonymous');
+                
+                // Badges
+                const sClass = 'badge-status badge-' + r.status.toLowerCase().replace(/ /g, '_');
+                const tClass = 'badge-type badge-' + r.type.toLowerCase().replace(/ /g, '_').replace(/-/g, '_');
+                
+                const badgeStatus = document.getElementById('badge-status-top');
+                badgeStatus.className = 'badge badge-lg ' + sClass;
+                badgeStatus.innerText = r.status;
+                
+                const badgeType = document.getElementById('badge-type');
+                badgeType.className = 'badge ' + tClass;
+                badgeType.innerText = r.type;
+
+                // Main Details
+                document.getElementById('field-desc').innerText = r.desc;
+                document.getElementById('field-loc').innerText = r.loc || 'Not specified';
+                document.getElementById('field-date').innerText = r.date || 'Not specified';
+                document.getElementById('field-rep').innerText = r.reporter || 'Anonymous';
+
+                // Meta Sidebar
+                document.getElementById('meta-id').innerText = "#" + r.id;
+                document.getElementById('meta-type').innerText = r.type;
+                document.getElementById('meta-status').innerText = r.status;
+                document.getElementById('meta-date').innerText = r.date;
+
+                // Relevant Laws Logic
+                let lawsHtml = '';
+                if (r.type === 'Financial') {
+                    lawsHtml = `<div class="law-ref">Art. 183 Criminal Code — Vote buying</div><div class="law-ref">Art. 53 Electoral Code — Campaign finance</div><div class="law-ref">Law 82/2017 — Anti-Corruption</div>`;
+                } else if (r.type === 'Administrative') {
+                    lawsHtml = `<div class="law-ref">Art. 46 Electoral Code — Public resources</div><div class="law-ref">Art. 181 Criminal Code — Obstruction</div><div class="law-ref">Law 82/2017 — Conflict of interest</div>`;
+                } else if (r.type === 'Informational') {
+                    lawsHtml = `<div class="law-ref">Art. 47 Electoral Code — Media access</div><div class="law-ref">Audiovisual Code — CCA regulations</div><div class="law-ref">OSCE/ODIHR Guidelines</div>`;
+                } else if (r.type === 'Mobilization') {
+                    lawsHtml = `<div class="law-ref">Art. 183 Criminal Code — Vote buying</div><div class="law-ref">Art. 38 Electoral Code — Voter secrecy</div>`;
+                } else if (r.type === 'Legal-Institutional') {
+                    lawsHtml = `<div class="law-ref">Venice Commission Code of Practice</div><div class="law-ref">ECHR — Protocol 1, Art. 3</div><div class="law-ref">Electoral Code — CEC procedures</div>`;
+                } else {
+                    lawsHtml = `<div class="law-ref">Electoral Code of Moldova</div><div class="law-ref">Criminal Code — Arts. 181–183</div>`;
+                }
+                lawsHtml += `<a href="/legislation.html" class="law-ref-link">View full legislation →</a>`;
+                document.getElementById('law-refs-container').innerHTML = lawsHtml;
+            });
+    </script>
+</body>
+</html>

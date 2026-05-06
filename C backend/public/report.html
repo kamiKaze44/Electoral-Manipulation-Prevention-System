@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Report | ElecGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/index.html" class="nav-brand">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7V12C3 16.97 6.96 21.57 12 23C17.04 21.57 21 16.97 21 12V7L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="brand-name">Elec<span class="brand-accent">Guard</span></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="/index.html" class="nav-link">Dashboard</a></li>
+            <li><a href="/news.html" class="nav-link">News</a></li>
+            <li><a href="/polling.html" class="nav-link">Where to Vote</a></li>
+            <li><a href="/legislation.html" class="nav-link">Legislation</a></li>
+            <li><a href="/reports.html" class="nav-link">Reports</a></li>
+            <li><a href="/report.html" class="nav-cta active">+ Submit Report</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="page-hero">
+            <div class="page-hero-content">
+                <div class="page-breadcrumb">ElecGuard → Submit Report</div>
+                <h1 class="page-title">Submit a Report</h1>
+                <p class="page-sub">Report suspected electoral manipulation. Your report will be forwarded to the relevant authorities. You may remain anonymous.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="form-layout">
+                <aside class="form-sidebar">
+                    <div class="sidebar-card">
+                        <h3 class="sidebar-card-title">What to report</h3>
+                        <ul class="sidebar-list">
+                            <li>Vote buying or material incentives offered for votes</li>
+                            <li>Organized voter transportation with payment</li>
+                            <li>Pressure from employers or local officials on how to vote</li>
+                            <li>Coordinated disinformation or fake news campaigns</li>
+                            <li>Use of public resources for campaign activities</li>
+                            <li>Suspicious campaign finance or undeclared funding</li>
+                        </ul>
+                    </div>
+                    <div class="sidebar-card sidebar-card-anon">
+                        <div class="anon-icon">🔒</div>
+                        <h3 class="sidebar-card-title">Your privacy</h3>
+                        <p>You may leave your name blank to submit anonymously. Reports are stored securely and are only accessible through this system. Your IP address is not logged.</p>
+                    </div>
+                </aside>
+
+                <div class="form-main">
+                    <form id="submit-form" class="report-form">
+                        <div class="form-group">
+                            <label class="form-label" for="manipulation_type">Type of Manipulation <span class="required">*</span></label>
+                            <select name="manipulation_type" id="manipulation_type" class="form-select" required>
+                                <option value="" disabled selected>Select the type of manipulation...</option>
+                                <option value="Informational">📡 Informational — Disinformation, fake news, media bias</option>
+                                <option value="Administrative">🏛 Administrative — Abuse of public resources, official pressure</option>
+                                <option value="Financial">💰 Financial — Vote buying, undeclared funding, bribery</option>
+                                <option value="Mobilization">🚌 Mobilization — Organized voter transport, turnout manipulation</option>
+                                <option value="Legal-Institutional">⚖️ Legal-Institutional — Illegal rule changes, biased commission decisions</option>
+                                <option value="Other">🔍 Other / Unknown</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="incident_date">Date of Incident</label>
+                                <input type="date" name="incident_date" id="incident_date" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="location">Location (or Click Map Below)</label>
+                                <input type="text" name="location" id="location" class="form-input" placeholder="e.g. Chișinău, Orhei, or Coordinates">
+                            </div>
+                        </div>
+
+                        <!-- INTERACTIVE MAP PICKER -->
+                        <div class="form-group">
+                            <div id="picker-map" style="height: 250px; width: 100%; border-radius: 8px; border: 1px solid var(--border); z-index: 1;"></div>
+                            <p class="form-hint">Click on the map to automatically fill in your precise location coordinates.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="description">Description <span class="required">*</span></label>
+                            <textarea name="description" id="description" class="form-textarea" rows="7" placeholder="Describe what you witnessed in as much detail as possible. Include: who was involved, what happened, how many people were affected, any evidence you have (photos, recordings, documents)..." required></textarea>
+                            <div class="form-hint">Be as specific as possible. More detail = more effective authority response.</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="reporter_name">Your Name <span class="optional">(optional — leave blank to remain anonymous)</span></label>
+                            <input type="text" name="reporter_name" id="reporter_name" class="form-input" placeholder="Anonymous">
+                        </div>
+                        <div class="form-actions">
+                            <a href="/index.html" class="btn btn-ghost">Cancel</a>
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Report →</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
+            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Map Picker
+        var pickerMap = L.map('picker-map').setView([47.0105, 28.8638], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(pickerMap);
+        
+        var currentMarker;
+        var selectedLat = 0;
+        var selectedLng = 0;
+
+        // When user clicks the map, drop a pin and fill the input box
+        pickerMap.on('click', function(e) {
+            if (currentMarker) pickerMap.removeLayer(currentMarker);
+            currentMarker = L.marker(e.latlng).addTo(pickerMap);
+            selectedLat = e.latlng.lat;
+            selectedLng = e.latlng.lng;
+            document.getElementById('location').value = selectedLat.toFixed(5) + ", " + selectedLng.toFixed(5);
+        });
+
+        // Intercept form submission and POST to C Backend
+        document.getElementById('submit-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Package the data natively
+            const formData = new URLSearchParams();
+            formData.append('type', document.getElementById('manipulation_type').value);
+            formData.append('date', document.getElementById('incident_date').value);
+            formData.append('loc', document.getElementById('location').value);
+            formData.append('lat', selectedLat);
+            formData.append('lng', selectedLng);
+            formData.append('desc', document.getElementById('description').value);
+            formData.append('reporter', document.getElementById('reporter_name').value || "Anonymous");
+
+            // Send to C Backend
+            fetch('/api/reports', {
+                method: 'POST',
+                body: formData // Sends as application/x-www-form-urlencoded
+            })
+            .then(response => {
+                if(response.ok) {
+                    window.location.href = "/reports.html"; // Redirect on success
+                } else {
+                    alert("Error saving report to the database.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Server connection failed.");
+            });
+        });
+    </script>
+</body>
+</html>
