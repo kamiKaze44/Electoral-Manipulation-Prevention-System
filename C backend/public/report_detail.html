@@ -6,6 +6,19 @@
     <title>Report Detail | ElecGuard</title>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Serif:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/style.css">
+    <style>
+        .status-btn-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        .btn-status { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: opacity 0.2s; width: 100%; }
+        .btn-status:hover { opacity: 0.85; }
+        .btn-pending     { background: #fef3c7; color: #92400e; }
+        .btn-review      { background: #dbeafe; color: #1e40af; }
+        .btn-resolved    { background: #dcfce7; color: #166534; }
+        .status-feedback { margin-top: 0.5rem; font-size: 0.85rem; color: #16a34a; display: none; }
+        .admin-lock { text-align: center; }
+        .btn-admin-unlock { background: none; border: 1px solid #475569; color: #94a3b8; border-radius: 6px; padding: 0.4rem 0.9rem; cursor: pointer; font-size: 0.85rem; width: 100%; }
+        .btn-admin-unlock:hover { border-color: #94a3b8; color: #e2e8f0; }
+        .admin-error { color: #f87171; font-size: 0.8rem; margin-top: 0.4rem; display: none; }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -70,9 +83,28 @@
                 <!-- Sidebar -->
                 <aside class="detail-sidebar">
                     <div class="sidebar-card">
+                        <h3 class="sidebar-card-title">Update Status</h3>
+
+                        <!-- Lock screen — visible by default -->
+                        <div class="admin-lock" id="admin-lock">
+                            <button class="btn-admin-unlock" onclick="promptAdmin()">Admin Access</button>
+                            <div class="admin-error" id="admin-error">Incorrect password</div>
+                        </div>
+
+                        <!-- Status buttons — hidden until admin unlocks -->
+                        <div id="status-controls" style="display:none;">
+                            <div class="status-btn-group">
+                                <button class="btn-status btn-pending"  onclick="updateStatus('Pending')">⏳ Pending</button>
+                                <button class="btn-status btn-review"   onclick="updateStatus('Under Review')">🔍 Under Review</button>
+                                <button class="btn-status btn-resolved" onclick="updateStatus('Resolved')">✓ Resolved</button>
+                            </div>
+                            <div class="status-feedback" id="status-feedback">✓ Status updated!</div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-card">
                         <h3 class="sidebar-card-title">Actions</h3>
                         <div class="action-list">
-                            <button onclick="alert('Prototype: Resolution simulated.');" class="btn btn-ghost btn-full">✓ Mark as Resolved</button>
                             <a href="/reports.html" class="btn btn-ghost btn-full">← Back to Reports</a>
                         </div>
                     </div>
@@ -89,9 +121,7 @@
 
                     <div class="sidebar-card">
                         <h3 class="sidebar-card-title">Relevant Laws</h3>
-                        <div class="law-refs" id="law-refs-container">
-                            <!-- JS Will inject specific laws based on type -->
-                        </div>
+                        <div class="law-refs" id="law-refs-container"></div>
                     </div>
                 </aside>
             </div>
@@ -112,41 +142,44 @@
         fetch('/api/reports/' + reportId)
             .then(res => res.json())
             .then(r => {
-                if(r.error) {
+                if (r.error) {
                     document.getElementById('title-id').innerText = "Report Not Found";
                     return;
                 }
 
-                // Header Info
+                // Header
                 document.getElementById('bread-id').innerText = "#" + r.id;
                 document.getElementById('title-id').innerText = "Report #" + r.id;
                 document.getElementById('title-sub').innerText = "Submitted by " + (r.reporter || 'Anonymous');
-                
-                // Badges
-                const sClass = 'badge-status badge-' + r.status.toLowerCase().replace(/ /g, '_');
-                const tClass = 'badge-type badge-' + r.type.toLowerCase().replace(/ /g, '_').replace(/-/g, '_');
-                
+
+                // Badges — use dashes consistently
+                const sClass = 'badge-status badge-' + r.status.toLowerCase().replace(/ /g, '-');
+                const tClass = 'badge-type badge-' + r.type.toLowerCase().replace(/ /g, '-').replace(/_/g, '-');
+
                 const badgeStatus = document.getElementById('badge-status-top');
                 badgeStatus.className = 'badge badge-lg ' + sClass;
                 badgeStatus.innerText = r.status;
-                
+
                 const badgeType = document.getElementById('badge-type');
                 badgeType.className = 'badge ' + tClass;
                 badgeType.innerText = r.type;
 
-                // Main Details
+                // Main fields
                 document.getElementById('field-desc').innerText = r.desc;
-                document.getElementById('field-loc').innerText = r.loc || 'Not specified';
+                document.getElementById('field-loc').innerText  = r.loc  || 'Not specified';
                 document.getElementById('field-date').innerText = r.date || 'Not specified';
-                document.getElementById('field-rep').innerText = r.reporter || 'Anonymous';
+                document.getElementById('field-rep').innerText  = r.reporter || 'Anonymous';
 
-                // Meta Sidebar
-                document.getElementById('meta-id').innerText = "#" + r.id;
-                document.getElementById('meta-type').innerText = r.type;
+                // Sidebar meta
+                document.getElementById('meta-id').innerText     = "#" + r.id;
+                document.getElementById('meta-type').innerText   = r.type;
                 document.getElementById('meta-status').innerText = r.status;
-                document.getElementById('meta-date').innerText = r.date;
+                document.getElementById('meta-date').innerText   = r.date;
 
-                // Relevant Laws Logic
+                // Highlight the current active status button
+                highlightActiveButton(r.status);
+
+                // Relevant laws
                 let lawsHtml = '';
                 if (r.type === 'Financial') {
                     lawsHtml = `<div class="law-ref">Art. 183 Criminal Code — Vote buying</div><div class="law-ref">Art. 53 Electoral Code — Campaign finance</div><div class="law-ref">Law 82/2017 — Anti-Corruption</div>`;
@@ -164,6 +197,67 @@
                 lawsHtml += `<a href="/legislation.html" class="law-ref-link">View full legislation →</a>`;
                 document.getElementById('law-refs-container').innerHTML = lawsHtml;
             });
+
+        // Highlights the button matching the current status
+        function highlightActiveButton(status) {
+            const map = {
+                'Pending':      '.btn-pending',
+                'Under Review': '.btn-review',
+                'Resolved':     '.btn-resolved'
+            };
+            document.querySelectorAll('.btn-status').forEach(b => b.style.outline = 'none');
+            const activeBtn = document.querySelector(map[status]);
+            if (activeBtn) activeBtn.style.outline = '2px solid #334155';
+        }
+
+        // Admin password gate
+        const ADMIN_PASSWORD = "elecguard2026";
+
+        function promptAdmin() {
+            const pass = prompt("Enter admin password:");
+            if (pass === ADMIN_PASSWORD) {
+                document.getElementById('admin-lock').style.display = 'none';
+                document.getElementById('status-controls').style.display = 'block';
+            } else if (pass !== null) {
+                const err = document.getElementById('admin-error');
+                err.style.display = 'block';
+                setTimeout(() => err.style.display = 'none', 2000);
+            }
+        }
+
+        // Sends POST request to backend to update status
+        function updateStatus(newStatus) {
+            const body = new URLSearchParams();
+            body.append('status', newStatus);
+
+            fetch('/api/reports/' + reportId + '/status', {
+                method: 'POST',
+                body: body
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'updated') {
+                    // Update badge in header live
+                    const badgeStatus = document.getElementById('badge-status-top');
+                    badgeStatus.className = 'badge badge-lg badge-status badge-' + newStatus.toLowerCase().replace(/ /g, '-');
+                    badgeStatus.innerText = newStatus;
+
+                    // Update sidebar meta
+                    document.getElementById('meta-status').innerText = newStatus;
+
+                    // Highlight active button
+                    highlightActiveButton(newStatus);
+
+                    // Show success message
+                    const feedback = document.getElementById('status-feedback');
+                    feedback.style.display = 'block';
+                    setTimeout(() => feedback.style.display = 'none', 2000);
+                } else {
+                    alert('Failed to update status.');
+                }
+            })
+            .catch(() => alert('Server connection failed.'));
+        }
     </script>
 </body>
 </html>
