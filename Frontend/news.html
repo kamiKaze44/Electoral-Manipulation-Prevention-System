@@ -9,18 +9,18 @@
     <style>
         /* Specific styles for the news grid */
         .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .news-card { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;}
-        .news-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1); }
-        .news-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; color: #64748b; }
-        .news-title { font-size: 1.25rem; font-family: 'IBM Plex Serif', serif; font-weight: 600; margin: 0; line-height: 1.4; color: #0f172a; }
-        .news-desc { color: #475569; font-size: 0.95rem; line-height: 1.5; flex-grow: 1; margin: 0;}
-        .read-more { margin-top: 1rem; color: #2563eb; font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; font-size: 0.9rem;}
-        
+        .news-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none;}
+        .news-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--border-2); }
+        .news-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.825rem; color: var(--text-muted); font-family: var(--font-mono) }
+        .news-title { font-size: 1.1rem; font-family: var(--font-serif); font-weight: 600; margin: 0; line-height: 1.4; color: var(--text); }
+        .news-desc { color: var(--text-2); font-size: 0.9rem; line-height: 1.6; flex-grow: 1; margin: 0;}
+        .read-more { margin-top: 0.5rem; color: var(--accent); font-weight: 500; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; font-size: 0.875rem;}
+        .read-more:hover {color: #7dd3fc}
         /* Brand Colors for different sources */
-        .source-badge { padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;}
-        .source-zdg { background: #fee2e2; color: #b91c1c; }
-        .source-nm { background: #e0f2fe; color: #0369a1; }
-        .source-el { background: #ffedd5; color: #c2410c; }
+        .source-badge { padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em;}
+        .source-zdg { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113, 0.25); }
+        .source-nm { background: rgba(56,189,248,0.12); color: var(--accent); border: 1px solid rgba(56,189,248,0.25); }
+        .source-el { background: rgba(251,191,36,0.12);  color: var(--amber);  border: 1px solid rgba(251,191,36,0.25); }
     </style>
 </head>
 <body>
@@ -61,15 +61,23 @@
             </div>
 
             <div class="news-grid" id="news-container">
-                <!-- News cards injected by JS -->
             </div>
         </section>
     </main>
 
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
-            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+            <div class="footer-brand">
+                <span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span>
+                <span class="footer-tagline">Electoral Integrity Protection System</span>
+            </div>
+            <div class="footer-meta">
+                <span>FAF-251 Technical University of Moldova</span>
+                <span class="dot"></span>
+                <span>Rotari Dan &amp; Siloci Maxim</span>
+                <span class="dot"></span>
+                <span>2026</span>
+            </div>
         </div>
     </footer>
 

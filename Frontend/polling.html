@@ -10,13 +10,17 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         .polling-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 2rem; }
-        .search-card { background: white; padding: 2rem; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: fit-content; }
-        .result-card { margin-top: 1.5rem; padding: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; display: none; }
+        .search-card { background: var(--surface); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--border); height: fit-content; }
+        .search-card h3 { color: var(--text); font-size: 1.1rem; margin-top: 0; margin-bottom: 0.25rem; }
+        .search-card p { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .result-card { margin-top: 1.5rem; padding: 1.5rem; background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); display: none; }
         .result-card.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        .station-id { font-family: 'IBM Plex Mono', monospace; color: #2563eb; font-weight: 600; font-size: 1.1rem; }
-        .station-name { font-size: 1.25rem; font-weight: 600; margin: 0.5rem 0; color: #0f172a; }
-        .station-address { color: #475569; margin-bottom: 1rem; }
-        .station-hours { display: inline-block; background: #dcfce7; color: #166534; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; }
+        .station-id { font-family: var(--font-mono); color: var(--accent); font-weight: 600; font-size: 1rem; }
+        .station-name { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0; color: var(--text); }
+        .station-address { color: var(--text-2); margin-bottom: 1rem; font-size: 0.875rem; }
+        .station-hours { display: inline-block; background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-weight: 500; }
+        .station-note { margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 0.75rem; line-height: 1.55; }
+        .station-note strong { color: var(--text-2); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 768px) { .polling-layout { grid-template-columns: 1fr; } }
     </style>
@@ -68,7 +72,7 @@
                         <div class="station-address" id="res-address">str. Studenților 9/7, Chișinău</div>
                         <div class="station-hours">🕒 Open 07:00 - 21:00</div>
                         
-                        <div style="margin-top: 1rem; font-size: 0.85rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">
+                        <div class="station-note">
                             <strong>Note:</strong> Bring your physical ID card (Buletin de identitate) with the accompanying loose leaf (fișa de însoțire).
                         </div>
                     </div>
@@ -84,8 +88,17 @@
 
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-brand"><span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span></div>
-            <div class="footer-meta"><span>FAF-251 TUM</span></div>
+            <div class="footer-brand">
+                <span class="brand-name-sm">Elec<span class="brand-accent">Guard</span></span>
+                <span class="footer-tagline">Electoral Integrity Protection System</span>
+            </div>
+            <div class="footer-meta">
+                <span>FAF-251 Technical University of Moldova</span>
+                <span class="dot"></span>
+                <span>Rotari Dan &amp; Siloci Maxim</span>
+                <span class="dot"></span>
+                <span>2026</span>
+            </div>
         </div>
     </footer>
 

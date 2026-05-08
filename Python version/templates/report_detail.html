@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Report #{{ report['id'] }}{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="page-hero-content">
+        <div class="page-breadcrumb">ElecGuard → <a href="{{ url_for('reports') }}" class="breadcrumb-link">Reports</a> → #{{ report['id'] }}</div>
+        <h1 class="page-title">Report #{{ report['id'] }}</h1>
+        <p class="page-sub">Submitted on {{ report['submitted_at'][:16] }} by {{ report['reporter_name'] }}</p>
+    </div>
+    <div class="page-hero-action">
+        <span class="badge badge-status badge-{{ report['status']|lower|replace(' ','_') }} badge-lg">
+            {{ report['status'] }}
+        </span>
+    </div>
+</section>
+
+<section class="section">
+    <div class="detail-layout">
+
+        <!-- Main report content -->
+        <div class="detail-main">
+
+            <!-- Report details card -->
+            <div class="detail-card">
+                <div class="detail-card-header">
+                    <h2 class="detail-card-title">Report Details</h2>
+                    <span class="badge badge-type badge-{{ report['manipulation_type']|lower|replace(' ','_')|replace('-','_') }}">
+                        {{ report['manipulation_type'] }}
+                    </span>
+                </div>
+
+                <div class="detail-fields">
+                    <div class="detail-field">
+                        <div class="detail-field-label">Description</div>
+                        <div class="detail-field-value detail-description">{{ report['description'] }}</div>
+                    </div>
+
+                    <div class="detail-fields-row">
+                        <div class="detail-field">
+                            <div class="detail-field-label">Location</div>
+                            <div class="detail-field-value">{{ report['location'] or 'Not specified' }}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Incident Date</div>
+                            <div class="detail-field-value">{{ report['incident_date'] or 'Not specified' }}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Submitted</div>
+                            <div class="detail-field-value">{{ report['submitted_at'][:16] }}</div>
+                        </div>
+                        <div class="detail-field">
+                            <div class="detail-field-label">Reporter</div>
+                            <div class="detail-field-value">{{ report['reporter_name'] }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Analysis card -->
+            <div class="detail-card ai-card">
+                <div class="detail-card-header">
+                    <h2 class="detail-card-title">
+                        <span class="ai-sparkle">✦</span>
+                        AI Analysis
+                    </h2>
+                    {% if not report['ai_analysis'] %}
+                    <form method="POST" action="{{ url_for('analyze', report_id=report['id']) }}" style="margin:0">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Run Analysis
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="ai-badge ai-done">Analysis Complete</span>
+                    {% endif %}
+                </div>
+
+                {% if report['ai_analysis'] %}
+                <div class="ai-analysis-content">
+                    {{ report['ai_analysis'] | replace('\n', '<br>') | replace('**', '') | safe }}
+                </div>
+                <div class="ai-footer">
+                    <span class="ai-model-tag">Powered by Claude AI (Anthropic)</span>
+                    <form method="POST" action="{{ url_for('analyze', report_id=report['id']) }}" style="margin:0">
+                        <button type="submit" class="btn btn-ghost btn-xs">Re-analyze</button>
+                    </form>
+                </div>
+
+                {% else %}
+                <div class="ai-placeholder">
+                    <div class="ai-placeholder-icon">✦</div>
+                    <p>No AI analysis yet. Click <strong>Run Analysis</strong> to have Claude analyze this report for severity, applicable laws, and recommended actions.</p>
+                    <p class="ai-placeholder-note">Analysis takes 5–15 seconds and requires an Anthropic API key to be configured.</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="detail-sidebar">
+
+            <!-- Actions -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">Actions</h3>
+                <div class="action-list">
+                    {% if not report['ai_analysis'] %}
+                    <form method="POST" action="{{ url_for('analyze', report_id=report['id']) }}">
+                        <button type="submit" class="btn btn-primary btn-full">
+                            ✦ Run AI Analysis
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    {% if report['status'] != 'Resolved' %}
+                    <form method="POST" action="{{ url_for('close_report', report_id=report['id']) }}">
+                        <button type="submit" class="btn btn-ghost btn-full">
+                            ✓ Mark as Resolved
+                        </button>
+                    </form>
+                    {% endif %}
+
+                    <a href="{{ url_for('reports') }}" class="btn btn-ghost btn-full">
+                        ← Back to Reports
+                    </a>
+                </div>
+            </div>
+
+            <!-- Report metadata -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">Report Info</h3>
+                <div class="meta-list">
+                    <div class="meta-item">
+                        <span class="meta-key">ID</span>
+                        <span class="meta-val mono">#{{ report['id'] }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-key">Type</span>
+                        <span class="meta-val">{{ report['manipulation_type'] }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-key">Status</span>
+                        <span class="meta-val">{{ report['status'] }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-key">AI Done</span>
+                        <span class="meta-val">{{ 'Yes' if report['ai_analysis'] else 'No' }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-key">Submitted</span>
+                        <span class="meta-val mono">{{ report['submitted_at'][:10] }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relevant legislation -->
+            <div class="sidebar-card">
+                <h3 class="sidebar-card-title">Relevant Laws</h3>
+                <div class="law-refs">
+                    {% if report['manipulation_type'] == 'Financial' %}
+                        <div class="law-ref">Art. 183 Criminal Code — Vote buying</div>
+                        <div class="law-ref">Art. 53 Electoral Code — Campaign finance</div>
+                        <div class="law-ref">Law 82/2017 — Anti-Corruption</div>
+                    {% elif report['manipulation_type'] == 'Administrative' %}
+                        <div class="law-ref">Art. 46 Electoral Code — Public resources</div>
+                        <div class="law-ref">Art. 181 Criminal Code — Obstruction</div>
+                        <div class="law-ref">Law 82/2017 — Conflict of interest</div>
+                    {% elif report['manipulation_type'] == 'Informational' %}
+                        <div class="law-ref">Art. 47 Electoral Code — Media access</div>
+                        <div class="law-ref">Audiovisual Code — CCA regulations</div>
+                        <div class="law-ref">OSCE/ODIHR Guidelines</div>
+                    {% elif report['manipulation_type'] == 'Mobilization' %}
+                        <div class="law-ref">Art. 183 Criminal Code — Vote buying</div>
+                        <div class="law-ref">Art. 38 Electoral Code — Voter secrecy</div>
+                        <div class="law-ref">Art. 181 Criminal Code — Obstruction</div>
+                    {% elif report['manipulation_type'] == 'Legal-Institutional' %}
+                        <div class="law-ref">Venice Commission Code of Practice</div>
+                        <div class="law-ref">ECHR — Protocol 1, Art. 3</div>
+                        <div class="law-ref">Electoral Code — CEC procedures</div>
+                    {% else %}
+                        <div class="law-ref">Electoral Code of Moldova</div>
+                        <div class="law-ref">Criminal Code — Arts. 181–183</div>
+                        <div class="law-ref">Law 82/2017 — Anti-Corruption</div>
+                    {% endif %}
+                    <a href="{{ url_for('legislation') }}" class="law-ref-link">View full legislation →</a>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+</section>
+
+{% endblock %}
