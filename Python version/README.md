@@ -1,1 +1,0 @@
-# Electoral-Manipulation-Prevention-System
