@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef _WIN32
-    #include <direct.h>
+#include <direct.h>
 #else
-    #include <unistd.h>
+#include <unistd.h>
 #endif
 
 sqlite3 *db;
@@ -43,14 +43,11 @@ static void ev_handler(struct mg_connection *c, int ev, void *ev_data)
         // 1. API: /api/reports (Handle GET all AND POST new)
         if (mg_match(hm->uri, mg_str("/api/reports"), NULL))
         {
-
-            // --- POST: Save New Report ---
             if (strncmp(hm->method.buf, "POST", 4) == 0)
             {
                 char type[100] = "", desc[2048] = "", loc[200] = "", date[50] = "", reporter[100] = "Anonymous";
                 char lat_str[50] = "0", lng_str[50] = "0";
 
-                // Read form data variables sent by report.html
                 mg_http_get_var(&hm->body, "type", type, sizeof(type));
                 mg_http_get_var(&hm->body, "desc", desc, sizeof(desc));
                 mg_http_get_var(&hm->body, "loc", loc, sizeof(loc));
@@ -59,7 +56,6 @@ static void ev_handler(struct mg_connection *c, int ev, void *ev_data)
                 mg_http_get_var(&hm->body, "lat", lat_str, sizeof(lat_str));
                 mg_http_get_var(&hm->body, "lng", lng_str, sizeof(lng_str));
 
-                // Insert into SQLite
                 sqlite3_stmt *stmt;
                 const char *sql = "INSERT INTO reports (type, desc, loc, lat, lng, status, date, reporter) VALUES (?, ?, ?, ?, ?, 'Pending', ?, ?)";
                 sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
@@ -77,8 +73,6 @@ static void ev_handler(struct mg_connection *c, int ev, void *ev_data)
 
                 mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"status\":\"success\"}");
             }
-
-            // --- GET: Fetch All Reports ---
             else
             {
                 sqlite3_stmt *stmt;
@@ -106,33 +100,89 @@ static void ev_handler(struct mg_connection *c, int ev, void *ev_data)
             }
         }
 
-        // 2. API: Get SINGLE Report by ID
-        else if (mg_match(hm->uri, mg_str("/api/reports/*"), NULL))
+        // 2. API: POST Update Report Status
+        else if (mg_match(hm->uri, mg_str("/api/reports/*/status"), NULL))
         {
-            int id = atoi(hm->uri.buf + 13);
-
-            sqlite3_stmt *stmt;
-            sqlite3_prepare_v2(db, "SELECT * FROM reports WHERE id = ?", -1, &stmt, NULL);
-            sqlite3_bind_int(stmt, 1, id);
-
-            if (sqlite3_step(stmt) == SQLITE_ROW)
+            if (strncmp(hm->method.buf, "POST", 4) == 0)
             {
-                char json[1024];
-                snprintf(json, sizeof(json),
-                         "{\"id\":%d, \"type\":\"%s\", \"desc\":\"%s\", \"loc\":\"%s\", \"lat\":%f, \"lng\":%f, \"status\":\"%s\", \"date\":\"%s\", \"reporter\":\"%s\"}",
-                         sqlite3_column_int(stmt, 0), sqlite3_column_text(stmt, 1), sqlite3_column_text(stmt, 2),
-                         sqlite3_column_text(stmt, 3), sqlite3_column_double(stmt, 4), sqlite3_column_double(stmt, 5),
-                         sqlite3_column_text(stmt, 6), sqlite3_column_text(stmt, 7), sqlite3_column_text(stmt, 8));
-                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", json);
+                int id = atoi(hm->uri.buf + 13);
+                char status[50] = "";
+
+                // Parse standard URL-encoded form data sent by frontend
+                mg_http_get_var(&hm->body, "status", status, sizeof(status));
+
+                if (strlen(status) > 0)
+                {
+                    // Convert URL-encoded spaces (e.g., "Under+Review" -> "Under Review")
+                    for (int i = 0; status[i]; i++)
+                    {
+                        if (status[i] == '+')
+                            status[i] = ' ';
+                    }
+
+                    sqlite3_stmt *stmt;
+                    const char *sql = "UPDATE reports SET status = ? WHERE id = ?";
+
+                    // Safe preparation check to prevent server crashes
+                    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+                    {
+                        sqlite3_bind_text(stmt, 1, status, -1, SQLITE_TRANSIENT);
+                        sqlite3_bind_int(stmt, 2, id);
+                        sqlite3_step(stmt);
+                        sqlite3_finalize(stmt);
+
+                        // Returning exactly what the frontend JS is looking for
+                        mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"status\":\"updated\"}");
+                    }
+                    else
+                    {
+                        mg_http_reply(c, 500, "Content-Type: application/json\r\n", "{\"error\":\"Database crash prevented\"}");
+                    }
+                }
+                else
+                {
+                    mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{\"error\":\"No status provided\"}");
+                }
             }
             else
             {
-                mg_http_reply(c, 404, "Content-Type: application/json\r\n", "{\"error\":\"Not found\"}");
+                mg_http_reply(c, 405, "Content-Type: application/json\r\n", "{\"error\":\"Method not allowed\"}");
             }
-            sqlite3_finalize(stmt);
         }
 
-        // 3. Static Files (Serve everything in /public)
+        // 3. API: GET Single Report by ID
+        else if (mg_match(hm->uri, mg_str("/api/reports/*"), NULL))
+        {
+            if (strncmp(hm->method.buf, "GET", 3) == 0)
+            {
+                int id = atoi(hm->uri.buf + 13);
+                sqlite3_stmt *stmt;
+                sqlite3_prepare_v2(db, "SELECT * FROM reports WHERE id = ?", -1, &stmt, NULL);
+                sqlite3_bind_int(stmt, 1, id);
+
+                if (sqlite3_step(stmt) == SQLITE_ROW)
+                {
+                    char json[1024];
+                    snprintf(json, sizeof(json),
+                             "{\"id\":%d, \"type\":\"%s\", \"desc\":\"%s\", \"loc\":\"%s\", \"lat\":%f, \"lng\":%f, \"status\":\"%s\", \"date\":\"%s\", \"reporter\":\"%s\"}",
+                             sqlite3_column_int(stmt, 0), sqlite3_column_text(stmt, 1), sqlite3_column_text(stmt, 2),
+                             sqlite3_column_text(stmt, 3), sqlite3_column_double(stmt, 4), sqlite3_column_double(stmt, 5),
+                             sqlite3_column_text(stmt, 6), sqlite3_column_text(stmt, 7), sqlite3_column_text(stmt, 8));
+                    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", json);
+                }
+                else
+                {
+                    mg_http_reply(c, 404, "Content-Type: application/json\r\n", "{\"error\":\"Not found\"}");
+                }
+                sqlite3_finalize(stmt);
+            }
+            else
+            {
+                // Prevent connection hangs on unhandled methods
+                mg_http_reply(c, 405, "Content-Type: application/json\r\n", "{\"error\":\"Method not allowed\"}");
+            }
+        }
+
         // 4. Static Files — serve from Frontend folder
         else
         {
@@ -150,25 +200,27 @@ static void ev_handler(struct mg_connection *c, int ev, void *ev_data)
         }
     }
 }
-void fix_slashes(char *path) {
+void fix_slashes(char *path)
+{
     for (int i = 0; path[i]; i++)
-        if (path[i] == '\\') path[i] = '/';
+        if (path[i] == '\\')
+            path[i] = '/';
 }
 int main(void)
 {
     // Build absolute path to Frontend folder which sits next to C backend
     char cwd[512];
     char raw_path[512];
-    #ifdef _WIN32
-        _getcwd(cwd, sizeof(cwd));
-        snprintf(raw_path, sizeof(raw_path), "%s/../Frontend", cwd);
-        _fullpath(g_frontend_path, raw_path, sizeof(g_frontend_path));
-        fix_slashes(g_frontend_path);  // add this line
-    #else
-        getcwd(cwd, sizeof(cwd));
-        snprintf(raw_path, sizeof(raw_path), "%s/../Frontend", cwd);
-        realpath(raw_path, g_frontend_path);
-    #endif
+#ifdef _WIN32
+    _getcwd(cwd, sizeof(cwd));
+    snprintf(raw_path, sizeof(raw_path), "%s/../Frontend", cwd);
+    _fullpath(g_frontend_path, raw_path, sizeof(g_frontend_path));
+    fix_slashes(g_frontend_path); // add this line
+#else
+    getcwd(cwd, sizeof(cwd));
+    snprintf(raw_path, sizeof(raw_path), "%s/../Frontend", cwd);
+    realpath(raw_path, g_frontend_path);
+#endif
 
     printf("Serving frontend from: %s\n", g_frontend_path);
 
