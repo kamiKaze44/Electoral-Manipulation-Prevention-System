@@ -124,7 +124,7 @@
                                 <div class="law-article-text"><strong>Integrity testing and reporting.</strong> Citizens and organizations are encouraged to report corruption through designated channels. Whistleblower protections apply to those who report in good faith.</div>
                             </div>
                             <div class="alert-box alert-warning">
-                                <strong>Reporting channel:</strong> Corruption-related electoral violations can be reported to the National Anti-Corruption Center (CNA) at <em>cna.md</em> or by calling the free hotline <strong>0 800 55555</strong>.
+                                <strong>Reporting channel:</strong> Corruption-related electoral violations can be reported to the National Anti-Corruption Center (CNA) at <em>cna.md</em> or by calling the free hotline <strong>0 800 55500</strong>.
                             </div>
                         </div>
                     </div>
@@ -220,35 +220,58 @@
                         <div class="leg-block-body">
                             <p>Every citizen of Moldova has the right to a free, fair, and transparent electoral process. If you witness or experience electoral manipulation, you have multiple options:</p>
                             <div class="reporting-channels">
+
+                                <!-- ElecGuard -->
                                 <div class="channel-card">
-                                    <div class="channel-icon">🛡</div>
-                                    <div class="channel-info">
+                                    <div class="channel-icon" style="width:48px;height:48px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                                        <svg style="width:32px;height:32px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 2L3 7V12C3 16.97 6.96 21.57 12 23C17.04 21.57 21 16.97 21 12V7L12 2Z" stroke="#38bdf8" stroke-width="1.5" stroke-linejoin="round"/>
+                                            <path d="M9 12L11 14L15 10" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="channel-info" style="flex:1;">
                                         <div class="channel-name">ElecGuard (This Platform)</div>
                                         <div class="channel-desc">Submit detailed reports. Reports are forwarded to monitoring authorities.</div>
                                     </div>
-                                    <a href="/report.html" class="btn btn-primary btn-sm">Report Now</a>
+                                    <a href="/report.html" class="btn btn-primary btn-sm" style="flex-shrink:0;">Report Now</a>
                                 </div>
+
+                                <!-- CEC -->
                                 <div class="channel-card">
-                                    <div class="channel-icon"></div>
-                                    <div class="channel-info">
+                                    <div class="channel-icon" style="width:48px;height:48px;flex-shrink:0;">
+                                        <img src="/images/cec.png" alt="CEC" style="width:48px;height:48px;object-fit:contain;border-radius:50%;">
+                                    </div>
+                                    <div class="channel-info" style="flex:1;">
                                         <div class="channel-name">Central Electoral Commission (CEC)</div>
                                         <div class="channel-desc">Official complaints during electoral periods. Website: cec.md</div>
                                     </div>
+                                    <a href="https://www.cec.md" target="_blank" class="btn btn-primary btn-sm" style="flex-shrink:0;">Go to cec.md</a>
                                 </div>
+
+                                <!-- CNA -->
                                 <div class="channel-card">
-                                    <div class="channel-icon"></div>
-                                    <div class="channel-info">
-                                        <div class="channel-name">National Anti-Corruption Center (CNA)</div>
-                                        <div class="channel-desc">Corruption-related violations. Hotline: 0 800 55555 </div>
+                                    <div class="channel-icon" style="width:48px;height:48px;flex-shrink:0;">
+                                        <img src="/images/cna.png" alt="CNA" style="width:48px;height:48px;object-fit:contain;border-radius:50%;">
                                     </div>
+                                    <div class="channel-info" style="flex:1;">
+                                        <div class="channel-name">National Anti-Corruption Center (CNA)</div>
+                                        <div class="channel-desc">Corruption-related violations. Hotline: 0 800 55555</div>
+                                    </div>
+                                    <a href="tel:080055555" class="btn btn-sm" style="flex-shrink:0;background:#ef4444;color:white;border:none;border-radius:8px;padding:0.4rem 0.9rem;font-weight:600;">0 800 55555</a>
                                 </div>
+
+                                <!-- Police -->
                                 <div class="channel-card">
-                                    <div class="channel-icon"></div>
-                                    <div class="channel-info">
+                                    <div class="channel-icon" style="width:48px;height:48px;flex-shrink:0;">
+                                        <img src="/images/112.png" alt="Police" style="width:48px;height:48px;object-fit:contain;border-radius:50%;">
+                                    </div>
+                                    <div class="channel-info" style="flex:1;">
                                         <div class="channel-name">National Police</div>
                                         <div class="channel-desc">For immediate criminal violations (vote buying, threats, violence). Emergency: 112</div>
                                     </div>
+                                    <a href="tel:112" class="btn btn-sm" style="flex-shrink:0;background:#ef4444;color:white;border:none;border-radius:8px;padding:0.4rem 0.9rem;font-weight:600;">112</a>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -265,11 +288,8 @@
                 <span class="footer-tagline">Electoral Integrity Protection System</span>
             </div>
             <div class="footer-meta">
-                <span>FAF-251 Technical University of Moldova</span>
-                <span class="dot"></span>
-                <span>Rotari Dan &amp; Siloci Maxim</span>
-                <span class="dot"></span>
-                <span>2026</span>
+                <span>FAF-251 Technical University of Moldova</span><span class="dot"></span>
+                <span>Rotari Dan & Siloci Maxim</span><span class="dot"></span><span>2026</span>
             </div>
         </div>
     </footer>

@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block title %}Legislation{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="page-hero-content">
+        <div class="page-breadcrumb">ElecGuard → Legislation</div>
+        <h1 class="page-title">Legal Framework</h1>
+        <p class="page-sub">Electoral laws, anti-corruption statutes, and international standards applicable to electoral manipulation in the Republic of Moldova.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="legislation-layout">
+
+        <!-- Sidebar navigation -->
+        <aside class="leg-sidebar">
+            <div class="leg-nav-title">Contents</div>
+            <nav class="leg-nav">
+                <a href="#electoral-code" class="leg-nav-item">Electoral Code</a>
+                <a href="#criminal-code" class="leg-nav-item">Criminal Code</a>
+                <a href="#contravention-code" class="leg-nav-item">Contravention Code</a>
+                <a href="#anti-corruption" class="leg-nav-item">Anti-Corruption Law</a>
+                <a href="#cec" class="leg-nav-item">CEC Regulations</a>
+                <a href="#international" class="leg-nav-item">International Standards</a>
+                <a href="#penalties" class="leg-nav-item">Penalties Overview</a>
+                <a href="#rights" class="leg-nav-item">Citizen Rights</a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <div class="leg-content">
+
+            <!-- Electoral Code -->
+            <div id="electoral-code" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Primary Legislation</span>
+                    <h2 class="leg-block-title">Electoral Code of the Republic of Moldova</h2>
+                    <p class="leg-block-source">Codul Electoral (Law No. 326 of 08.12.2022, in force since 2023)</p>
+                </div>
+                <div class="leg-block-body">
+                    <p>The new Electoral Code, adopted in 2022, is the primary law governing all electoral processes in Moldova. It established stronger mechanisms to prevent fraud, ensure transparent campaign financing, and block the misuse of public resources.</p>
+
+                    <div class="law-article">
+                        <div class="law-article-num">General Principles</div>
+                        <div class="law-article-text">
+                            <strong>Free and Secret Voting.</strong> The state guarantees the free expression of citizens' will. The secrecy of the vote is guaranteed. Any attempt to determine how a person voted, or any coercion related to voting choice, is strictly prohibited.
+                        </div>
+                    </div>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Definitions (Art. 1)</div>
+                        <div class="law-article-text">
+                            <strong>Administrative Resources.</strong> Human, financial, and material resources controlled by public officials. The Code explicitly forbids using the public budget, institutional equipment, or public personnel during working hours to favor any candidate.
+                        </div>
+                    </div>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Campaign Finance</div>
+                        <div class="law-article-text">
+                            <strong>Financial Transparency.</strong> All political parties and electoral candidates must transparently report all campaign funding to the CEC. Undeclared funding, anonymous donations, or financing from foreign states and criminal groups are strictly prohibited and result in immediate sanctions or candidate deregistration.
+                        </div>
+                    </div>
+
+                    <div class="alert-box alert-info">
+                        <strong>Key principle:</strong> The 2022 Electoral Code strictly separates the state from political campaigns and ensures equal opportunities for all candidates.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Criminal Code -->
+            <div id="criminal-code" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Criminal Liability</span>
+                    <h2 class="leg-block-title">Criminal Code — Electoral Offenses</h2>
+                    <p class="leg-block-source">Codul Penal al Republicii Moldova (Law No. 985-XV of 18.04.2002, with recent severe amendments)</p>
+                </div>
+                <div class="leg-block-body">
+                    <p>The Criminal Code defines electoral offenses as serious crimes. Recent amendments have heavily tightened the penalties, especially targeting organized vote-buying networks and illegal political financing.</p>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Art. 181</div>
+                        <div class="law-article-text">
+                            <strong>Obstruction of electoral rights.</strong> Preventing citizens from voting or obstructing electoral bodies through violence, deception, or threats is punishable by a severe fine (550-750 conventional units), community service, or up to <strong>3 years imprisonment</strong>.
+                        </div>
+                    </div>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Art. 181¹</div>
+                        <div class="law-article-text">
+                            <strong>Vote buying (Active Corruption).</strong> Offering, promising, or giving money, goods, services, or other advantages to a voter to exercise their rights in a certain way is punishable by a heavy fine or <strong>1 to 5 years imprisonment</strong>. 
+                        </div>
+                    </div>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Art. 181²</div>
+                        <div class="law-article-text">
+                            <strong>Illegal financing of political parties/campaigns.</strong> The acceptance of financing from organized criminal groups or foreign entities carries severe penalties, ranging up to <strong>7 years imprisonment</strong> and bans on holding certain public functions.
+                        </div>
+                    </div>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Art. 182</div>
+                        <div class="law-article-text">
+                            <strong>Falsification of electoral documents.</strong> Falsifying voter lists, ballots, results protocols, or voting multiple times is punishable by fines, community service, or up to <strong>5 years imprisonment</strong>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contravention Code (Administrative Fines) -->
+            <div id="contravention-code" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Administrative Liability</span>
+                    <h2 class="leg-block-title">Contravention Code — Passive Corruption</h2>
+                    <p class="leg-block-source">Codul Contravențional al Republicii Moldova</p>
+                </div>
+                <div class="leg-block-body">
+                    <p>In response to massive electoral bribery networks, Moldova recently introduced strict administrative penalties for citizens who *accept* bribes in exchange for their vote.</p>
+
+                    <div class="law-article">
+                        <div class="law-article-num">Art. 47¹</div>
+                        <div class="law-article-text">
+                            <strong>Passive Electoral Corruption.</strong> Claiming, accepting, or receiving money, goods, or services by a voter to vote or not vote for a specific candidate is heavily sanctioned. The penalty consists of a massive administrative fine (up to tens of thousands of MDL). <em>Note: Voters who self-denounce and cooperate with law enforcement can be exempted from this fine.</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anti-Corruption Law -->
+            <div id="anti-corruption" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Anti-Corruption</span>
+                    <h2 class="leg-block-title">Anti-Corruption Legal Framework</h2>
+                </div>
+                <div class="leg-block-body">
+                    <p>Electoral corruption is a primary target of specialized law enforcement bodies. The National Anti-Corruption Center (CNA) and the Anti-Corruption Prosecution Office (PA) are empowered to investigate complex networks of financial manipulation, illicit party financing, and money laundering.</p>
+
+                    <div class="alert-box alert-warning">
+                        <strong>Reporting channel:</strong> Electoral corruption, vote-buying schemes, and illicit campaign financing should be immediately reported to the National Anti-Corruption Center (CNA) at <em>cna.md</em> or by calling the national free hotline <strong>0 800 55500</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- CEC -->
+            <div id="cec" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Regulatory Body</span>
+                    <h2 class="leg-block-title">Central Electoral Commission Regulations</h2>
+                    <p class="leg-block-source">Comisia Electorală Centrală (CEC) — cec.md</p>
+                </div>
+                <div class="leg-block-body">
+                    <p>The CEC is Moldova's permanent, independent electoral authority responsible for ensuring the legality, transparency, and correct administration of elections.</p>
+
+                    <div class="info-list">
+                        <div class="info-list-item">
+                            <span class="info-bullet">→</span>
+                            <span>The CEC monitors campaign finance declarations and can sanction parties by withholding state subsidies or requesting their removal from the race.</span>
+                        </div>
+                        <div class="info-list-item">
+                            <span class="info-bullet">→</span>
+                            <span>Complaints regarding administrative resources or media access can be filed to the CEC or local electoral councils.</span>
+                        </div>
+                        <div class="info-list-item">
+                            <span class="info-bullet">→</span>
+                            <span>Starting in 2026 (per the 2022 reform), the CEC consists of 7 members to reduce political affiliation suspicions.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Penalties -->
+            <div id="penalties" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Quick Reference</span>
+                    <h2 class="leg-block-title">Penalties Overview</h2>
+                </div>
+                <div class="leg-block-body">
+                    <div class="penalties-table">
+                        <div class="penalties-row penalties-header">
+                            <span>Offense</span>
+                            <span>Legal Basis</span>
+                            <span>Maximum Penalty</span>
+                        </div>
+                        <div class="penalties-row">
+                            <span>Vote buying (giving/offering)</span>
+                            <span>Art. 181¹ Criminal Code</span>
+                            <span class="penalty-high">1 to 5 years / Heavy Fine</span>
+                        </div>
+                        <div class="penalties-row">
+                            <span>Vote buying (receiving)</span>
+                            <span>Art. 47¹ Contravention Code</span>
+                            <span class="penalty-med">Massive Admin Fine (Up to ~37,500 MDL)</span>
+                        </div>
+                        <div class="penalties-row">
+                            <span>Illegal Campaign Financing</span>
+                            <span>Art. 181² Criminal Code</span>
+                            <span class="penalty-critical">Up to 7 years Prison</span>
+                        </div>
+                        <div class="penalties-row">
+                            <span>Obstruction of voting rights</span>
+                            <span>Art. 181 Criminal Code</span>
+                            <span class="penalty-high">3 years / Fine</span>
+                        </div>
+                        <div class="penalties-row">
+                            <span>Falsification of documents</span>
+                            <span>Art. 182 Criminal Code</span>
+                            <span class="penalty-critical">Up to 5 years Prison</span>
+                        </div>
+                        <div class="penalties-row">
+                            <span>Use of administrative resources</span>
+                            <span>Codul Electoral / Contravention</span>
+                            <span class="penalty-med">Fines / Sanctions by CEC</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Citizen Rights -->
+            <div id="rights" class="leg-block">
+                <div class="leg-block-header">
+                    <span class="leg-tag">Your Rights</span>
+                    <h2 class="leg-block-title">Citizen Rights &amp; How to Report</h2>
+                </div>
+                <div class="leg-block-body">
+                    <p>Every citizen of Moldova has the right to a free, fair, and transparent electoral process. If you witness or experience electoral manipulation, you have multiple options:</p>
+
+                    <div class="reporting-channels">
+                        <div class="channel-card">
+                            <div class="channel-icon">🛡</div>
+                            <div class="channel-info">
+                                <div class="channel-name">ElecGuard (This Platform)</div>
+                                <div class="channel-desc">Submit detailed reports with AI analysis. Reports are forwarded to monitoring authorities.</div>
+                            </div>
+                            <a href="{{ url_for('report') }}" class="btn btn-primary btn-sm">Report Now</a>
+                        </div>
+                        <div class="channel-card">
+                            <div class="channel-icon">⚖️</div>
+                            <div class="channel-info">
+                                <div class="channel-name">Central Electoral Commission (CEC)</div>
+                                <div class="channel-desc">Official complaints during electoral periods. Website: cec.md</div>
+                            </div>
+                        </div>
+                        <div class="channel-card">
+                            <div class="channel-icon">🔍</div>
+                            <div class="channel-info">
+                                <div class="channel-name">National Anti-Corruption Center (CNA)</div>
+                                <div class="channel-desc">Corruption-related violations. Hotline: 0 800 55500 (free)</div>
+                            </div>
+                        </div>
+                        <div class="channel-card">
+                            <div class="channel-icon">🚔</div>
+                            <div class="channel-info">
+                                <div class="channel-name">National Police (IGP)</div>
+                                <div class="channel-desc">For immediate violations (vote buying in progress, threats, violence). Emergency: 112</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
